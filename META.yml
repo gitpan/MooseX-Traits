@@ -20,4 +20,4 @@ no_index:
     - t
 requires: 
   Moose::Role: 0
-version: 0.01
+version: 0.02

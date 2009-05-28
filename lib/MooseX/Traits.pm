@@ -1,7 +1,7 @@
 package MooseX::Traits;
 use Moose::Role;
 
-our $VERSION   = '0.04';
+our $VERSION   = '0.05';
 our $AUTHORITY = 'id:JROCKWAY';
 
 has '_trait_namespace' => (
@@ -15,7 +15,7 @@ has '_trait_namespace' => (
 
 my $transform_trait = sub {
     my ($class, $name) = @_;
-    my $namespace = $class->meta->get_attribute('_trait_namespace');
+    my $namespace = $class->meta->find_attribute_by_name('_trait_namespace');
     my $base;
     if($namespace->has_default){
         $base = $namespace->default;

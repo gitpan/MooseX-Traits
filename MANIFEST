@@ -18,3 +18,4 @@ t/00-load.t
 t/author/pod-coverage.t
 t/author/pod.t
 t/basic.t
+t/subclass.t

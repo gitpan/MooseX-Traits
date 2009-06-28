@@ -1,3 +1,8 @@
+0.06    Mon Jun 29 00:30:58 CEST 2009
+        - use "is => bare" on newer moosen (Closes: RT#47011) (hdp)
+        - depend on a Moose version that provides
+          meta->constructor_name (Closes RT#46936)
+
 0.05    Thu May 28 08:37:21 MST 2009
         - support subclasses of classes that use MX::Traits
 

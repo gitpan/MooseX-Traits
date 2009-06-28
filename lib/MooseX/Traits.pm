@@ -1,13 +1,14 @@
 package MooseX::Traits;
 use Moose::Role;
 
-our $VERSION   = '0.05';
+our $VERSION   = '0.06';
 our $AUTHORITY = 'id:JROCKWAY';
 
 has '_trait_namespace' => (
     # no accessors or init_arg
     init_arg => undef,
     isa      => 'Str',
+    is       => 'bare',
 );
 
 # note: "$class" throughout is "class name" or "instance of class
@@ -40,7 +41,15 @@ my $resolve_traits = sub {
 };
 
 sub new_with_traits {
-    my ($class, %args) = @_;
+    my $class = shift;
+
+    my ($hashref, %args) = 0;
+    if (ref($_[0]) eq 'HASH') {
+        %args    = %{ +shift };
+        $hashref = 1;
+    } else {
+        %args    = @_;
+    }
 
     if (my $traits = delete $args{traits}) {
         if(@$traits){
@@ -61,7 +70,7 @@ sub new_with_traits {
     confess "$class does not have a constructor defined via the MOP?"
       if !$constructor;
 
-    return $class->$constructor(%args);
+    return $class->$constructor($hashref ? \%args : %args);
 }
 
 sub apply_traits {
@@ -139,6 +148,10 @@ arguments for initializing attributes in consumed roles can be in C<%$self>
 =over 4
 
 =item B<< $class->new_with_traits(%args, traits => \@traits) >>
+
+C<new_with_traits> can also take a hashref, e.g.:
+
+  my $instance = $class->new_with_traits({ traits => \@traits, foo => 'bar' });
 
 =item B<< $instance->apply_traits($trait => \%args) >>
 

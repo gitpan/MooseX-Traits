@@ -1,7 +1,14 @@
 package MooseX::Traits;
 use Moose::Role;
 
-our $VERSION   = '0.06';
+use MooseX::Traits::Util qw(new_class_with_traits);
+
+use warnings;
+use warnings::register;
+
+use namespace::autoclean;
+
+our $VERSION   = '0.07';
 our $AUTHORITY = 'id:JROCKWAY';
 
 has '_trait_namespace' => (
@@ -10,35 +17,6 @@ has '_trait_namespace' => (
     isa      => 'Str',
     is       => 'bare',
 );
-
-# note: "$class" throughout is "class name" or "instance of class
-# name"
-
-my $transform_trait = sub {
-    my ($class, $name) = @_;
-    my $namespace = $class->meta->find_attribute_by_name('_trait_namespace');
-    my $base;
-    if($namespace->has_default){
-        $base = $namespace->default;
-        if(ref $base eq 'CODE'){
-            $base = $base->();
-        }
-    }
-
-    return $name unless $base;
-    return $1 if $name =~ /^[+](.+)$/;
-    return join '::', $base, $name;
-};
-
-my $resolve_traits = sub {
-    my ($class, @traits) = @_;
-
-    return map {
-        my $transformed = $class->$transform_trait($_);
-        Class::MOP::load_class($transformed);
-        $transformed;
-    } @traits;
-};
 
 sub new_with_traits {
     my $class = shift;
@@ -51,37 +29,38 @@ sub new_with_traits {
         %args    = @_;
     }
 
-    if (my $traits = delete $args{traits}) {
-        if(@$traits){
-            $traits = [$class->$resolve_traits(@$traits)];
+    my $new_class = new_class_with_traits($class, @{ delete $args{traits} || [] });
 
-            my $meta = $class->meta->create_anon_class(
-                superclasses => [ $class->meta->name ],
-                roles        => $traits,
-                cache        => 1,
-            );
-
-            $meta->add_method('meta' => sub { $meta });
-            $class = $meta->name;
-        }
-    }
-
-    my $constructor = $class->meta->constructor_name;
-    confess "$class does not have a constructor defined via the MOP?"
+    my $constructor = $new_class->constructor_name;
+    confess "$class ($new_class) does not have a constructor defined via the MOP?"
       if !$constructor;
 
-    return $class->$constructor($hashref ? \%args : %args);
+    return $new_class->name->$constructor($hashref ? \%args : %args);
 }
+
+# this code is broken and should never have been added.  i probably
+# won't delete it, but it is definitely not up-to-date with respect to
+# other features, and never will be.
+#
+# runtime role application is fundamentally broken.  if you really
+# need it, write it yourself, but consider applying the roles before
+# you create an instance.
 
 sub apply_traits {
     my ($self, $traits, $rebless_params) = @_;
+
+    # disable this warning with "use MooseX::Traits; no warnings 'MooseX::Traits'"
+    warnings::warnif('apply_traits is deprecated due to being fundamentally broken. '.
+                     q{disable this warning with "no warnings 'MooseX::Traits'"});
 
     # arrayify
     my @traits = $traits;
     @traits = @$traits if ref $traits;
 
     if (@traits) {
-        @traits = $self->$resolve_traits(@traits);
+        @traits = MooseX::Traits::Util::resolve_traits(
+            $self, @traits,
+        );
 
         for my $trait (@traits){
             $trait->meta->apply($self, rebless_params => $rebless_params || {});
@@ -153,10 +132,6 @@ C<new_with_traits> can also take a hashref, e.g.:
 
   my $instance = $class->new_with_traits({ traits => \@traits, foo => 'bar' });
 
-=item B<< $instance->apply_traits($trait => \%args) >>
-
-=item B<< $instance->apply_traits(\@traits => \%args) >>
-
 =back
 
 =head1 ATTRIBUTES YOUR CLASS GETS
@@ -202,8 +177,6 @@ Example:
 Jonathan Rockway C<< <jrockway@cpan.org> >>
 
 Stevan Little C<< <stevan.little@iinteractive.com> >>
-
-Rafael Kitover C<< <rkitover@cpan.org> >>
 
 =head1 COPYRIGHT AND LICENSE
 

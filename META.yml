@@ -25,6 +25,8 @@ requires:
   Class::MOP: 0.84
   Moose: 0.84
   Moose::Role: 0
+  Sub::Exporter: 0
+  namespace::autoclean: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.06
+version: 0.07

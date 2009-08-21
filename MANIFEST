@@ -9,6 +9,7 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/MooseX/Traits.pm
+lib/MooseX/Traits/Util.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
@@ -18,4 +19,6 @@ t/00-load.t
 t/author/pod-coverage.t
 t/author/pod.t
 t/basic.t
+t/class.t
+t/parameterized.t
 t/subclass.t

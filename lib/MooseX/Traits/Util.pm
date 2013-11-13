@@ -1,4 +1,10 @@
 package MooseX::Traits::Util;
+{
+  $MooseX::Traits::Util::VERSION = '0.12';
+}
+BEGIN {
+  $MooseX::Traits::Util::AUTHORITY = 'cpan:JROCKWAY';
+}
 use strict;
 use warnings;
 
@@ -6,6 +12,7 @@ use Sub::Exporter -setup => {
     exports => ['new_class_with_traits'],
 };
 
+use Class::Load qw(load_class);
 use Carp qw(confess);
 
 # note: "$class" throughout is "class name" or "instance of class
@@ -46,7 +53,7 @@ sub resolve_traits {
         my $orig = $_;
         if(!ref $orig){
             my $transformed = transform_trait($class, $orig);
-            Class::MOP::load_class($transformed);
+            load_class($transformed);
             $transformed;
         }
         else {
@@ -78,3 +85,7 @@ sub new_class_with_traits {
 }
 
 1;
+
+=for Pod::Coverage check_class new_class_with_traits resolve_traits transform_trait
+
+=cut

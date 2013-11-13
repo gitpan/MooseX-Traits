@@ -1,4 +1,13 @@
 package MooseX::Traits;
+{
+  $MooseX::Traits::VERSION = '0.12';
+}
+# git description: v0.11-14-gf2ce21c
+
+BEGIN {
+  $MooseX::Traits::AUTHORITY = 'cpan:JROCKWAY';
+}
+# ABSTRACT: automatically apply roles at object creation time
 use Moose::Role;
 
 use MooseX::Traits::Util qw(new_class_with_traits);
@@ -7,9 +16,6 @@ use warnings;
 use warnings::register;
 
 use namespace::autoclean;
-
-our $VERSION   = '0.11';
-our $AUTHORITY = 'id:JROCKWAY';
 
 has '_trait_namespace' => (
     # no accessors or init_arg
@@ -61,6 +67,7 @@ sub new_with_traits {
 # need it, write it yourself, but consider applying the roles before
 # you create an instance.
 
+
 sub apply_traits {
     my ($self, $traits, $rebless_params) = @_;
 
@@ -89,9 +96,22 @@ no Moose::Role;
 
 __END__
 
+=pod
+
+=encoding UTF-8
+
+=for :stopwords Jonathan Rockway Infinity Interactive, Inc. http://www.iinteractive.com
+Chris Etheridge Matt S. Trout Rafael Kitover Shawn Moore Stevan Little
+Prather Tomas Doran Yuval Kogman Florian Ragwitz Hans Dieter Pearcey Jesse
+Luehrs Karen
+
 =head1 NAME
 
 MooseX::Traits - automatically apply roles at object creation time
+
+=head1 VERSION
+
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -128,7 +148,7 @@ C<with_traits>, and then instantiate that.
 
 There is also C<new_with_traits>, which exists for compatibility
 reasons.  It accepts a C<traits> parameter, creates a new class with
-those traits, and then insantiates it.
+those traits, and then instantiates it.
 
    Class->new_with_traits( traits => [qw/Foo Bar/], foo => 42, bar => 1 )
 
@@ -144,6 +164,8 @@ other methods:
    $c->whatever( foo => 1234 );
 
 And so on.
+
+=for Pod::Coverage apply_traits
 
 =head1 METHODS
 
@@ -199,32 +221,65 @@ Example:
   $instance2->does('Trait')          # true
   $instance2->does('Another::Trait') # false
 
-=head1 AUTHORS and CONTRIBUTORS
+=head1 AUTHOR
 
-Jonathan Rockway C<< <jrockway@cpan.org> >>
-
-Stevan Little C<< <stevan.little@iinteractive.com> >>
-
-Tomas Doran C<< <bobtfish@bobtfish.net> >>
-
-Matt S. Trout C<< <mst@shadowcatsystems.co.uk> >>
-
-Jesse Luehrs C<< <doy at tozt dot net> >>
-
-Shawn Moore C<< <sartak@bestpractical.com> >>
-
-Florian Ragwitz C<< <rafl@debian.org> >>
-
-Chris Prather C<< <chris@prather.org> >>
-
-Yuval Kogman C<< <nothingmuch@woobling.org> >>
+Jonathan Rockway <jrockway@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008 Infinity Interactive, Inc.
+This software is copyright (c) 2008 by Infinity Interactive, Inc. http://www.iinteractive.com.
 
-L<http://www.iinteractive.com>
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+=head1 CONTRIBUTORS
 
+=over 4
+
+=item *
+
+Chris Prather <chris@prather.org>
+
+=item *
+
+Florian Ragwitz <rafl@debian.org>
+
+=item *
+
+Hans Dieter Pearcey <hdp@weftsoar.net>
+
+=item *
+
+Jesse Luehrs <doy@tozt.net>
+
+=item *
+
+Karen Etheridge <ether@cpan.org>
+
+=item *
+
+Matt S. Trout <mst@shadowcatsystems.co.uk>
+
+=item *
+
+Rafael Kitover <rkitover@cpan.org>
+
+=item *
+
+Shawn Moore <sartak@bestpractical.com>
+
+=item *
+
+Stevan Little <stevan.little@iinteractive.com>
+
+=item *
+
+Tomas Doran <bobtfish@bobtfish.net>
+
+=item *
+
+Yuval Kogman <nothingmuch@woobling.org>
+
+=back
+
+=cut
